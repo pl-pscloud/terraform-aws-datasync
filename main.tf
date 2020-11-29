@@ -3,6 +3,10 @@ resource "aws_datasync_agent" "pscloud-datasync-agent" {
   
   name            = each.value.name
   activation_key  = each.value.activation_key
+
+  tags = {
+    Name = "${var.pscloud_company}_task_${each.key}_${var.pscloud_env}"
+  }
   
 }
 
@@ -18,7 +22,7 @@ resource "aws_datasync_location_smb" "pscloud-datasync-location-smb" {
   agent_arns = [ each.value.datasync_agent_arn ]
 
   tags = {
-    Name = each.key
+    Name = "${var.pscloud_company}_location_${each.key}_${var.pscloud_env}"
   }
 
 }
@@ -34,7 +38,7 @@ resource "aws_datasync_location_s3" "pscloud-datasync-location-s3" {
   }
 
   tags = {
-    Name = each.key
+    Name = "${var.pscloud_company}_location_${each.key}_${var.pscloud_env}"
   }
 
 }
@@ -44,7 +48,7 @@ resource "aws_datasync_task" "pscloud-datasync-task" {
 
 
   destination_location_arn = each.value.destanation_arn
-  name                     = "${var.pscloud_company}_task_${each.value.name}_${var.pscloud_env}" 
+  name                     = "${var.pscloud_company}_${each.value.name}_${var.pscloud_env}" 
   source_location_arn      = each.value.source_arn
 
   options {
@@ -53,5 +57,9 @@ resource "aws_datasync_task" "pscloud-datasync-task" {
     posix_permissions   = "NONE"
     uid                 = "NONE"
     gid                 = "NONE"
+  }
+
+  tags = {
+    Name = "${var.pscloud_company}_${each.value.name}_${var.pscloud_env}"
   }
 }
